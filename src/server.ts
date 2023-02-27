@@ -5,6 +5,7 @@ import mongoose, { ConnectOptions } from 'mongoose';
 const app: express.Application = express();
 dotenv.config();
 const PORT = 3456;
+import userStore from './models/user/user.model';
 
 const { MONGO_URL } = process.env;
 
