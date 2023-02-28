@@ -13,9 +13,11 @@ const userStore = {
   create: async (user: User): Promise<User> => {
     const newUser = await userDoc.create(user);
     return newUser;
-  }
+  },
   //update: () => {},
-  //delete: () => {}
+  delete: async (email: string) => {
+    return await userDoc.deleteOne({ email: email });
+  }
 };
 
 export default userStore;

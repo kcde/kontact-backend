@@ -19,7 +19,6 @@ export async function createUser(req: Request, res: Response) {
   }
 
   //create user
-
   try {
     const newUser = await userStore.create(userInfo);
 
@@ -28,6 +27,22 @@ export async function createUser(req: Request, res: Response) {
     console.log('unable to create new user');
     return res.status(400).json('error');
   }
+}
 
-  res.json(req.body);
+export async function deleteUser(req: Request, res: Response) {
+  const email: string = req.body.email as unknown as string;
+
+  //check if email is provided
+  if (!email) {
+    return res.status(400).json({ error: 'please provide user email' });
+  }
+
+  try {
+    await userStore.delete(email);
+  } catch (err) {
+    console.log(err);
+    res.json({ error: 'Unable to delete user' });
+  } finally {
+    res.json({ success: true });
+  }
 }
