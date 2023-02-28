@@ -1,13 +1,24 @@
 import dotenv from 'dotenv';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import mongoose, { ConnectOptions } from 'mongoose';
-
+import cors from 'cors';
+import api from './api';
 const app: express.Application = express();
 dotenv.config();
 const PORT = 3456;
 import userStore from './models/user/user.model';
+import bodyParser from 'body-parser';
 
 const { MONGO_URL } = process.env;
+
+app.use(cors());
+app.use(bodyParser.json());
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('Welcome to the the backend api for signup form');
+});
+
+app.use('/api', api);
 
 app.listen(PORT, async () => {
   try {
@@ -27,7 +38,7 @@ app.listen(PORT, async () => {
     console.log('unable to ocnnect to mongo');
   }
 
-  console.log(`App running on port   ${PORT}`);
+  console.log(`App running on  localhost:${PORT}`);
 });
 
 dotenv.config();
