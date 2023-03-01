@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
+import dotenv from 'dotenv';
 import { User } from '../models/user/user.type';
 import userStore from '../models/user/user.model';
+import bcrypt from 'bcrypt';
+dotenv.config();
+
+const { SALT_ROUNDS } = process.env;
 
 export async function createUser(req: Request, res: Response) {
   const userInfo: User = {
@@ -16,6 +21,20 @@ export async function createUser(req: Request, res: Response) {
     if (!item) {
       return res.status(400).json({ error: `please provide ${key} value` });
     }
+  }
+
+  //hash user password
+
+  try {
+    const hashedPassword: string = await bcrypt.hash(
+      userInfo.password,
+      Number(SALT_ROUNDS as unknown as number)
+    );
+    userInfo.password = hashedPassword;
+  } catch (error) {
+    console.log('unable to hash password');
+    console.error(error);
+    return res.status(500).json({ error: 'Unable to save user' });
   }
 
   //create user
