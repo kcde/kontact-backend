@@ -20,6 +20,7 @@ This is the server for a free trial sign up form
 
 - [ ] Verify Users with there password before deleting
 - [ ] Retutn 404 when trying to delete an unavailable email
+- [ ] User should be added with unique email
 
 ## Run Locally
 

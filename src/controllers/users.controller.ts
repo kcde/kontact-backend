@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { User } from '../models/user/user.type';
 import userStore from '../models/user/user.model';
 import bcrypt from 'bcrypt';
+import { doesEmailExist } from '../services/userServices';
 dotenv.config();
 
 const { SALT_ROUNDS } = process.env;
@@ -23,8 +24,19 @@ export async function createUser(req: Request, res: Response) {
     }
   }
 
-  //hash user password
+  //check if a user is registered with the email
 
+  try {
+    const emailStatus: boolean = await doesEmailExist(userInfo.email);
+
+    if (emailStatus) {
+      return res.status(400).json({ error: 'User with this email exists' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to perform an email check ' });
+  }
+
+  //hash user password
   try {
     const hashedPassword: string = await bcrypt.hash(
       userInfo.password,
@@ -54,6 +66,18 @@ export async function deleteUser(req: Request, res: Response) {
   //check if email is provided
   if (!email) {
     return res.status(400).json({ error: 'please provide user email' });
+  }
+
+  //check if a user is registered with the email
+
+  try {
+    const emailStatus: boolean = await doesEmailExist(email);
+
+    if (!emailStatus) {
+      return res.status(400).json({ error: 'No valid user with this email' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Unable to perform an email check ' });
   }
 
   try {

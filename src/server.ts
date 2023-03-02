@@ -17,5 +17,6 @@ app.use('/api', api);
 
 export const server = app.listen(PORT, async () => {
   await connectMongo();
+
   console.log(`App running on  localhost:${PORT}`);
 });
