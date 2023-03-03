@@ -7,7 +7,7 @@ const userStore = {
     return allUsers;
   },
   read: async (email: string): Promise<User[]> => {
-    const user = await userDoc.find({ email: email }).exec();
+    const user = await userDoc.find({ email: email });
     return user;
   },
   create: async (user: User): Promise<User> => {

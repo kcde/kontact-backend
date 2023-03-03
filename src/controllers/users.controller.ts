@@ -4,6 +4,7 @@ import { User } from '../models/user/user.type';
 import userStore from '../models/user/user.model';
 import bcrypt from 'bcrypt';
 import { doesEmailExist } from '../services/userServices';
+
 dotenv.config();
 
 const { SALT_ROUNDS } = process.env;
@@ -62,10 +63,13 @@ export async function createUser(req: Request, res: Response) {
 
 export async function deleteUser(req: Request, res: Response) {
   const email: string = req.body.email as unknown as string;
+  const password: string = req.body.password as unknown as string;
 
   //check if email is provided
-  if (!email) {
-    return res.status(400).json({ error: 'please provide user email' });
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ error: 'please provide user email and password' });
   }
 
   //check if a user is registered with the email
@@ -77,7 +81,25 @@ export async function deleteUser(req: Request, res: Response) {
       return res.status(400).json({ error: 'No valid user with this email' });
     }
   } catch (err) {
-    res.status(500).json({ error: 'Unable to perform an email check ' });
+    return res.status(500).json({ error: 'Unable to perform an email check ' });
+  }
+
+  //check if password is correct
+  try {
+    const user = await userStore.read(email);
+    const hashedPassword = user[0].password;
+
+    const doesPasswordMatch = await bcrypt.compare(password, hashedPassword);
+    console.log(password);
+
+    console.log(doesPasswordMatch);
+
+    if (!doesPasswordMatch) {
+      return res.status(400).json({ error: 'invalid username and password' });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: 'Unable to verify password' });
   }
 
   try {
