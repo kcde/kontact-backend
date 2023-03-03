@@ -18,9 +18,10 @@ This is the server for a free trial sign up form
 
 ## TODO
 
-- [ ] Verify Users with there password before deleting
+- [x] Verify Users with there password before deleting
 - [x] Retutn 404 when trying to delete an unavailable email
 - [x] User should be added with unique email
+- [ ] Set up test database
 
 ## Run Locally
 
