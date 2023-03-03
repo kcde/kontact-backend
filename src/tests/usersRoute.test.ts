@@ -30,4 +30,21 @@ describe('Test /users route', () => {
 
     expect(response.status).toBe(400);
   });
+
+  test('It should return 400 bad request when password is incorrect   on  DELETE /api/users', async (): Promise<void> => {
+    const response = await request(server).delete('/api/users').send({
+      email: 'keside@gmail.com',
+      password: 'passwo'
+    });
+
+    expect(response.status).toBe(400);
+  });
+  test('It should return 200 OK    on  DELETE /api/users', async (): Promise<void> => {
+    const response = await request(server).delete('/api/users').send({
+      email: 'keside@gmail.com',
+      password: 'password'
+    });
+
+    expect(response.status).toBe(200);
+  });
 });
