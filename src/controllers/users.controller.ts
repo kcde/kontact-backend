@@ -4,10 +4,40 @@ import { User } from '../models/user/user.type';
 import userStore from '../models/user/user.model';
 import bcrypt from 'bcrypt';
 import { doesEmailExist } from '../services/userServices';
+import userDoc from '../models/user/user.mongo';
 
 dotenv.config();
 
 const { SALT_ROUNDS } = process.env;
+
+export async function getUser(req: Request, res: Response) {
+  const email: string = req.params.email as unknown as string;
+  //check if email is provided
+  if (!email) {
+    return res
+      .status(400)
+      .json({ error: 'please provide user email and password' });
+  }
+
+  try {
+    const user = await userStore.read(email);
+    if (user.length) {
+      return res.json(user);
+    }
+    return res.status(404).json({ error: 'user not found' });
+  } catch (err) {
+    return res.status(500).json({ error: 'unable to get all users' });
+  }
+}
+export async function getAllUsers(_req: Request, res: Response) {
+  try {
+    const users = await userStore.readAll();
+
+    return res.json(users);
+  } catch (err) {
+    return res.status(500).json({ error: 'unable to get all users' });
+  }
+}
 
 export async function createUser(req: Request, res: Response) {
   const userInfo: User = {
@@ -86,7 +116,7 @@ export async function deleteUser(req: Request, res: Response) {
 
   //check if password is correct
   try {
-    const user = await userStore.read(email);
+    const user = await userDoc.find({ email: email });
     const hashedPassword = user[0].password;
 
     const doesPasswordMatch = await bcrypt.compare(password, hashedPassword);
